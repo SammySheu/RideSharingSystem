@@ -1,0 +1,140 @@
+@startuml RideSharingSystem
+
+title Ride Sharing System - C++ Class Diagram
+
+' Styling
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor<<abstract>> LightYellow
+    BorderColor Black
+    ArrowColor Black
+}
+
+' Abstract Base Class - Ride
+abstract class Ride <<abstract>> {
+    # {field} rideID : int
+    # {field} pickupLocation : string
+    # {field} dropoffLocation : string
+    # {field} distance : double
+    # {field} fareAmount : double
+    --
+    + {method} Ride(id: int, pickup: string, dropoff: string, dist: double)
+    + {method} ~Ride() {virtual}
+    + {abstract} {method} fare() : double {abstract}
+    + {method} rideDetails() : void {virtual}
+    + {method} getRideID() : int
+    + {method} getPickupLocation() : string
+    + {method} getDropoffLocation() : string
+    + {method} getDistance() : double
+    + {method} getFareAmount() : double
+}
+
+' Derived Class - StandardRide
+class StandardRide {
+    - {static} BASE_FARE : double = 2.50
+    - {static} RATE_PER_MILE : double = 1.50
+    --
+    + {method} StandardRide(id: int, pickup: string, dropoff: string, dist: double)
+    + {method} fare() : double {override}
+    + {method} rideDetails() : void {override}
+}
+
+' Derived Class - PremiumRide
+class PremiumRide {
+    - {static} BASE_FARE : double = 5.00
+    - {static} RATE_PER_MILE : double = 2.50
+    - {static} LUXURY_SURCHARGE : double = 3.00
+    --
+    + {method} PremiumRide(id: int, pickup: string, dropoff: string, dist: double)
+    + {method} fare() : double {override}
+    + {method} rideDetails() : void {override}
+}
+
+' Driver Class
+class Driver {
+    - {field} driverID : int
+    - {field} name : string
+    - {field} rating : double
+    - {field} assignedRides : vector<Ride*>
+    --
+    + {method} Driver(id: int, driverName: string, rate: double)
+    + {method} ~Driver()
+    + {method} addRide(ride: Ride*) : void
+    + {method} getDriverInfo() : void
+    + {method} getTotalEarnings() : double
+    + {method} getDriverID() : int
+    + {method} getName() : string
+    + {method} getRating() : double
+    + {method} getNumberOfRides() : int
+}
+
+' Rider Class
+class Rider {
+    - {field} riderID : int
+    - {field} name : string
+    - {field} requestedRides : vector<Ride*>
+    --
+    + {method} Rider(id: int, riderName: string)
+    + {method} ~Rider()
+    + {method} requestRide(ride: Ride*) : void
+    + {method} viewRides() : void
+    + {method} getTotalSpent() : double
+    + {method} getRiderID() : int
+    + {method} getName() : string
+    + {method} getNumberOfRides() : int
+}
+
+' Relationships
+
+' Inheritance (Generalization)
+Ride <|-- StandardRide : inherits
+Ride <|-- PremiumRide : inherits
+
+' Association (Driver manages Rides)
+Driver "1" o-- "0..*" Ride : manages >
+
+' Association (Rider requests Rides)
+Rider "1" o-- "0..*" Ride : requests >
+
+' Notes for OOP Principles
+note right of Ride
+  **INHERITANCE & POLYMORPHISM**
+  - Abstract base class with pure virtual fare()
+  - StandardRide and PremiumRide inherit
+  - Virtual methods enable polymorphism
+end note
+
+note bottom of Driver
+  **ENCAPSULATION**
+  - assignedRides is private
+  - Accessed only through public methods
+  - Data hiding and controlled access
+end note
+
+note bottom of Rider
+  **ENCAPSULATION**
+  - requestedRides is private
+  - Accessed only through public methods
+  - Data protection
+end note
+
+' Legend
+legend bottom right
+  **OOP Principles Demonstrated:**
+  
+  1. **Encapsulation**
+     • Private members in Driver & Rider
+     • Public accessor methods
+  
+  2. **Inheritance**
+     • StandardRide & PremiumRide extend Ride
+     • Protected members accessible to derived classes
+  
+  3. **Polymorphism**
+     • Virtual fare() method
+     • Runtime binding
+     • Uniform interface for different ride types
+end legend
+
+@enduml
+
